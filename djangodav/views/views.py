@@ -33,7 +33,7 @@ from djangodav.utils import WEBDAV_NSMAP, D, url_join, get_property_tag_list, rf
 
 
 PATTERN_IF_DELIMITER = re.compile(r'(<([^>]+)>)|(\(([^\)]+)\))')
-
+PATTERN_CONTENT_RANGE=re.compile('^\s*bytes\s*([0-9]*)-.*$')
 # get settings
 DJANGODAV_X_REDIRECT = getattr(settings, 'DJANGODAV_X_REDIRECT', None)
 DJANGODAV_X_REDIRECT_PREFIX = getattr(settings, 'DJANGODAV_X_REDIRECT_PREFIX', "")
@@ -122,7 +122,7 @@ class DavView(TemplateView):
             return response
         response['Allow'] = ", ".join(self._allowed_methods())
         if self.resource.exists and self.resource.is_object:
-            response['Allow-Ranges'] = 'bytes'
+            response['Accept-Ranges'] = 'bytes'
         return response
 
     def _allowed_methods(self):
@@ -187,6 +187,8 @@ class DavView(TemplateView):
         """
         if not self.resource.exists:
             # Resource does not exist
+            if head:
+                return HttpResponse(content='', status=404)
             raise Http404("Resource doesn't exists")
         if not path.endswith("/") and self.resource.is_collection:
             # make sure collections always end with a slash
@@ -211,7 +213,14 @@ class DavView(TemplateView):
             response['Content-Type'] = self.resource.content_type
             response['ETag'] = self.resource.etag
             response['Content-Length'] = self.resource.getcontentlength
-
+            response['Accept-Ranges'] = 'bytes'
+            response['Cache-Control'] = 'must-revalidate'
+            
+            etags = request.META.get('HTTP_IF_NONE_MATCH',None)
+            if etags \
+                and (self.resource.etag in (e.strip(' ').strip('"') for e in etags.split(','))):
+                     response.status_code=304
+                     return response
             if not head:
                 # not a head request, so we can actually return a response
                 if DJANGODAV_X_REDIRECT:
@@ -294,11 +303,15 @@ class DavView(TemplateView):
         created = not self.resource.exists
 
         # check headers for X-File-Name
-        file_name_forwarding = request.META.get('HTTP_X_FILE_NAME', None)
-        if file_name_forwarding:
-            self.resource.write(request, file_name_forwarding)
+        range = request.META.get('HTTP_CONTENT_RANGE', None)
+        if range == None:
+            range_start=None
         else:
-            self.resource.write(request)
+            m=PATTERN_CONTENT_RANGE.match(range)
+            if not m: return HttpResponseBadRequest("Invalid Content-Range")
+            range_start=int(m[1])
+            
+        self.resource.write(request, range_start=range_start)
 
         if created:
             self.__dict__['resource'] = self.get_resource(path=self.resource.get_path())
