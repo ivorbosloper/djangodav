@@ -295,7 +295,7 @@ class DavView(TemplateView):
         """
         parent = self.resource.get_parent()
         if not parent.exists:
-            return HttpResponseConflict("Resource doesn't exists")
+            return HttpResponseConflict("Parent resource doesn't exist")
         if self.resource.is_collection:
             return HttpResponseNotAllowed(list(set(self._allowed_methods()) - set(['MKCOL', 'PUT'])))
         if not self.resource.exists and not self.has_access(parent, 'write'):
