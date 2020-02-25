@@ -38,7 +38,6 @@ class BaseFSDavResource(BaseDavResource):
     python's os library to do most of the work."""
 
     root = None
-    quote = False
 
     def get_abs_path(self):
         """Return the absolute path of the resource. Used internally to interface with
