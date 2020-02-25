@@ -73,6 +73,8 @@ class DavView(TemplateView):
             self.path = '/'
             self.base_url = request.META['PATH_INFO']
 
+        self.user = request.user
+
         meta = request.META.get
         self.xbody = kwargs['xbody'] = None
         if (request.method.lower() != 'put'
@@ -147,7 +149,7 @@ class DavView(TemplateView):
 
     @cached_property
     def resource(self):
-        return self.get_resource(path=self.path)
+        return self.get_resource(path=self.path, user=self.user)
 
     def get_resource(self, **kwargs):
         return self.resource_class(**self.get_resource_kwargs(**kwargs))
@@ -314,7 +316,7 @@ class DavView(TemplateView):
         self.resource.write(request, range_start=range_start)
 
         if created:
-            self.__dict__['resource'] = self.get_resource(path=self.resource.get_path())
+            self.__dict__['resource'] = self.get_resource(path=self.resource.get_path(), user=self.user)
             return HttpResponseCreated()
         else:
             return HttpResponseNoContent()
@@ -335,7 +337,7 @@ class DavView(TemplateView):
         self.lock_class(self.resource).del_locks()
         self.resource.delete()
         response = HttpResponseNoContent()
-        self.__dict__['resource'] = self.get_resource(path=self.resource.get_path())
+        self.__dict__['resource'] = self.get_resource(path=self.resource.get_path(), user=self.user)
         return response
 
     def mkcol(self, request, path, *args, **kwargs):
@@ -357,7 +359,7 @@ class DavView(TemplateView):
         if not self.has_access(self.resource, 'write'):
             return self.no_access()
         self.resource.create_collection()
-        self.__dict__['resource'] = self.get_resource(path=self.resource.get_path())
+        self.__dict__['resource'] = self.get_resource(path=self.resource.get_path(), user=self.user)
         return HttpResponseCreated()
 
     def relocate(self, request, path, method, *args, **kwargs):
@@ -388,7 +390,7 @@ class DavView(TemplateView):
         if sparts.scheme != dparts.scheme or sparts.hostname != dparts.hostname:
             return HttpResponseBadGateway('Source and destination must have the same scheme and host.')
         # adjust path for our base url:
-        dst = self.get_resource(path=dparts.path[len(self.base_url):])
+        dst = self.get_resource(path=dparts.path[len(self.base_url):], user=self.user)
         if not dst.get_parent().exists:
             return HttpResponseConflict()
         if not self.has_access(self.resource, 'write'):
