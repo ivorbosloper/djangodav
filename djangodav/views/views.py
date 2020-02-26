@@ -352,7 +352,7 @@ class DavView(TemplateView):
         if self.resource.exists:
             return HttpResponseNotAllowed(list(set(self._allowed_methods()) - set(['MKCOL', 'PUT'])))
         if not self.resource.get_parent().exists:
-            return HttpResponseConflict()
+            return HttpResponseConflict("Parent resource doesn't exist")
         length = request.META.get('CONTENT_LENGTH', 0)
         if length and int(length) != 0:
             return HttpResponseMediatypeNotSupported()
@@ -392,7 +392,7 @@ class DavView(TemplateView):
         # adjust path for our base url:
         dst = self.get_resource(path=dparts.path[len(self.base_url):], user=self.user)
         if not dst.get_parent().exists:
-            return HttpResponseConflict()
+            return HttpResponseConflict("Parent resource doesn't exist")
         if not self.has_access(self.resource, 'write'):
             return self.no_access()
         overwrite = request.META.get('HTTP_OVERWRITE', 'T')
