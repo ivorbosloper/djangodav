@@ -36,11 +36,12 @@ class BaseDavResource(object):
         '{DAV:}getlastmodified', '{DAV:}resourcetype', '{DAV:}displayname'
     ]
 
-    def __init__(self, path):
+    def __init__(self, path=None, user=None):
         self.path = []
         path = path.strip("/")
         if path:
             self.path = path.split("/")
+        self.user = user
 
     def get_path(self):
         return self.construct_path(self.path, self.is_collection)
@@ -157,7 +158,9 @@ class BaseDavResource(object):
         self.delete()
 
     def clone(self, *args, **kwargs):
-        return self.__class__(*args, **kwargs)
+        clone = self.__class__(*args, **kwargs)
+        clone.user = self.user
+        return clone
 
     def move_object(self, destination):
         raise NotImplemented()
