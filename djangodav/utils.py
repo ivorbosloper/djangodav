@@ -23,29 +23,26 @@
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import time
 import calendar
+import time
 import unicodedata
-
-
-from urllib.parse import quote as urlquote
-from django.utils.feedgenerator import rfc2822_date
-
 from email.utils import parsedate_tz
+from urllib.parse import quote as urlquote
 
 # ToDo: do not use lxml, use defusedxml to avoid XML vulnerabilities
 import lxml.builder as lb
+from django.utils.feedgenerator import rfc2822_date
 
 # Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
-FORMAT_RFC_822 = '%a, %d %b %Y %H:%M:%S GMT'
+FORMAT_RFC_822 = "%a, %d %b %Y %H:%M:%S GMT"
 # Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
-FORMAT_RFC_850 = '%A %d-%b-%y %H:%M:%S GMT'
+FORMAT_RFC_850 = "%A %d-%b-%y %H:%M:%S GMT"
 # Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
-FORMAT_ASC = '%a %b %d %H:%M:%S %Y'
+FORMAT_ASC = "%a %b %d %H:%M:%S %Y"
 
 WEBDAV_NS = "DAV:"
 
-WEBDAV_NSMAP = {'D': WEBDAV_NS}
+WEBDAV_NSMAP = {"D": WEBDAV_NS}
 
 D = lb.ElementMaker(namespace=WEBDAV_NS, nsmap=WEBDAV_NSMAP)
 
@@ -61,7 +58,7 @@ def get_property_tag_list(res, *names):
 
 
 def get_property_tag(res, name):
-    if name == 'resourcetype':
+    if name == "resourcetype":
         if res.is_collection:
             return D(name, D.collection)
         return D(name)
@@ -75,14 +72,14 @@ def get_property_tag(res, name):
 def safe_join(root, *paths):
     """The provided os.path.join() does not work as desired. Any path starting with /
     will simply be returned rather than actually being joined with the other elements."""
-    if not root.startswith('/'):
-        root = '/' + root
+    if not root.startswith("/"):
+        root = "/" + root
     for path in paths:
-        while root.endswith('/'):
+        while root.endswith("/"):
             root = root[:-1]
-        while path.startswith('/'):
+        while path.startswith("/"):
             path = path[1:]
-        root += '/' + path
+        root += "/" + path
     return root
 
 
@@ -90,7 +87,7 @@ def url_join(base, *paths):
     """Assuming base is the scheme and host (and perhaps path) we will join the remaining
     path elements to it."""
     paths = safe_join(*paths) if paths else ""
-    while base.endswith('/'):
+    while base.endswith("/"):
         base = base[:-1]
     return base + paths
 
@@ -105,18 +102,18 @@ def ns_split(tag):
 
 def ns_join(ns, name):
     """Joins a namespace and property name into clark notation."""
-    return '{%s:}%s' % (ns, name)
+    return "{%s:}%s" % (ns, name)
 
 
 def rfc3339_date(dt):
     if not dt:
-        return ''
-    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+        return ""
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def rfc1123_date(dt):
     if not dt:
-        return ''
+        return ""
     return rfc2822_date(dt)
 
 
@@ -145,10 +142,12 @@ def rfc5987_content_disposition(file_name, disposition_type="attachment"):
     :param disposition_type: either "attachment" or "inline"
     :return:
     """
-    ascii_name = unicodedata.normalize('NFKD', file_name).encode('ascii', 'ignore').decode()
+    ascii_name = (
+        unicodedata.normalize("NFKD", file_name).encode("ascii", "ignore").decode()
+    )
     header = '{}; filename="{}"'.format(disposition_type, ascii_name)
     if ascii_name != file_name:
         quoted_name = urlquote(file_name)
-        header += '; filename*=UTF-8\'\'{}'.format(quoted_name)
+        header += "; filename*=UTF-8''{}".format(quoted_name)
 
     return header

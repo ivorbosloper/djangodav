@@ -26,10 +26,10 @@
 class DavAcl:
     """Represents all the permissions that a user might have on a resource. This
     makes it easy to implement virtual permissions."""
+
     def __init__(self, read=False, write=False, delete=False, full=None):
         if full is not None:
-            self.read = self.write = self.delete = \
-                self.create = self.relocate = full
+            self.read = self.write = self.delete = self.create = self.relocate = full
         self.read = read
         self.write = write
         self.delete = delete

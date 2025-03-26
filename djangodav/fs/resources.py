@@ -116,26 +116,30 @@ class BaseFSDavResource(BaseDavResource):
 
 class DummyReadFSDavResource(BaseFSDavResource):
     def read(self):
-        return open(self.get_abs_path(), 'rb')
+        return open(self.get_abs_path(), "rb")
 
 
 class DummyWriteFSDavResource(BaseFSDavResource):
     """
     Provides a "dummy" write method for FS Dav Resources
     """
+
     def write(self, request, temp_file=None, range_start=None):
         if temp_file:
             # move temp file (e.g., coming from nginx)
             shutil.move(temp_file, self.get_abs_path())
-        elif range_start == None:
+        elif range_start is None:
             # open binary file and write to disk
-            with open(self.get_abs_path(), 'wb') as dst:
+            with open(self.get_abs_path(), "wb") as dst:
                 shutil.copyfileobj(request, dst)
         else:
             # open binary file and write to disk
-            with open(self.get_abs_path(), 'r+b') as dst:
+            with open(self.get_abs_path(), "r+b") as dst:
                 dst.seek(range_start)
                 shutil.copyfileobj(request, dst)
 
-class DummyFSDAVResource(DummyReadFSDavResource, DummyWriteFSDavResource, BaseFSDavResource):
+
+class DummyFSDAVResource(
+    DummyReadFSDavResource, DummyWriteFSDavResource, BaseFSDavResource
+):
     pass
