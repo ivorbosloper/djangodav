@@ -22,6 +22,7 @@ from djangodav.responses import HttpResponsePreconditionFailed, HttpResponseCrea
     HttpResponseConflict, HttpResponseMediatypeNotSupported, HttpResponseBadGateway, HttpResponseMultiStatus, \
     HttpResponseLocked, ResponseException
 from djangodav.utils import WEBDAV_NSMAP, D, url_join, get_property_tag_list, rfc1123_date, rfc5987_content_disposition
+import logging
 
 
 PATTERN_IF_DELIMITER = re.compile(r'(<([^>]+)>)|(\(([^\)]+)\))')
@@ -29,6 +30,8 @@ PATTERN_CONTENT_RANGE=re.compile('^\s*bytes\s*([0-9]*)-.*$')
 # get settings
 DJANGODAV_X_REDIRECT = getattr(settings, 'DJANGODAV_X_REDIRECT', None)
 DJANGODAV_X_REDIRECT_PREFIX = getattr(settings, 'DJANGODAV_X_REDIRECT_PREFIX', "")
+
+log = logging.getLogger(__name__)
 
 
 class DavView(TemplateView):
@@ -87,13 +90,13 @@ class DavView(TemplateView):
         try:
             resp = handler(request, self.path, *args, **kwargs)
         except ResponseException as e:
-            print(e)
+            log.exception(e)
             resp = e.response
         except PermissionDenied as pe:
-            print(pe)
+            log.exception(pe)
             resp = HttpResponseForbidden()
         except ValidationError as ve:
-            print(ve)
+            log.exception(ve)
             resp = HttpResponseBadRequest()
 
         if not 'Allow' in resp:
@@ -399,7 +402,7 @@ class DavView(TemplateView):
             dst.delete()
         errors = getattr(self.resource, method)(dst, *args, **kwargs)
         if errors:
-            print(errors)
+            log.warn(errors)
             return self.build_xml_response(response_class=HttpResponseMultiStatus) # WAT?
         if dst_exists:
             return HttpResponseNoContent()
@@ -422,8 +425,7 @@ class DavView(TemplateView):
         #     print("canceling because depth=", depth)
         #     return HttpResponseBadRequest()
 
-        print("Copying {} located at {} to ...".format(self.resource.displayname, path))
-
+        log.debug("Copying {} located at {} to ...", self.resource.displayname, path)
         return self.relocate(request, path, 'copy', depth=depth)
 
     def move(self, request, path, xbody):

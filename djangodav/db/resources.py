@@ -29,6 +29,9 @@ from django.utils.timezone import now
 from djangodav.base.resources import BaseDavResource
 from djangodav.utils import url_join
 from functools import reduce
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class BaseDBDavResource(BaseDavResource):
@@ -196,7 +199,7 @@ class NameLookupDBDavMixIn:
         :param destination:
         :return:
         """
-        print("in my copy object method")
+        log.info("in my copy object method")
 
         # ToDo: When we "copy" a file (not a collection), we should also physically copy the file
 
