@@ -45,6 +45,9 @@ class BaseDBDavResource(BaseDavResource):
         if 'obj' in kwargs:  # Accepting ready object to reduce db requests
             self.__dict__['obj'] = kwargs.pop('obj')
         super(BaseDBDavResource, self).__init__(path)
+        # Overridable in child implementations
+        self.collection_model_qs = self.collection_model.objects
+        self.object_model_qs = self.object_model.objects
 
     @cached_property
     def obj(self):

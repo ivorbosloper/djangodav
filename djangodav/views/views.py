@@ -297,14 +297,13 @@ class DavView(TemplateView):
         created = not self.resource.exists
 
         # check headers for X-File-Name
-        range = request.META.get('HTTP_CONTENT_RANGE', None)
-        if range == None:
-            range_start=None
-        else:
-            m=PATTERN_CONTENT_RANGE.match(range)
-            if not m: return HttpResponseBadRequest("Invalid Content-Range")
-            range_start=int(m[1])
-            
+        range_start = None
+        if range_ := request.META.get('HTTP_CONTENT_RANGE', None) is not None:
+            m = PATTERN_CONTENT_RANGE.match(range_)
+            if not m:
+                return HttpResponseBadRequest("Invalid Content-Range")
+            range_start = int(m[1])
+
         self.resource.write(request, range_start=range_start)
 
         if created:
