@@ -40,8 +40,14 @@ DEFAULT_SETTINGS = dict(
             ENGINE = 'django.db.backends.sqlite3'
         )
     ),
-    ROOT_URLCONF = 'djangodav.tests.urls',
-    MIDDLEWARE_CLASSES = ()
+    # ROOT_URLCONF = 'djangodav.tests.urls',
+    MIDDLEWARE_CLASSES = (),
+    TEMPLATES=(
+        dict(
+            BACKEND='django.template.backends.django.DjangoTemplates',
+            APP_DIRS=True
+        ),
+    )
 )
 
 
@@ -55,13 +61,9 @@ def runtests(*test_args):
 
     parent = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, parent)
-    try:
-        from django.test.runner import DiscoverRunner
-        runner_class = DiscoverRunner
-    except ImportError:
-        from django.test.simple import DjangoTestSuiteRunner
-        runner_class = DjangoTestSuiteRunner
-    failures = runner_class(verbosity=1, interactive=True, failfast=False).run_tests(test_args)
+    from django.test.runner import DiscoverRunner
+    # test_name_patterns=["test_get_obj"]
+    failures = DiscoverRunner(verbosity=1, interactive=True, failfast=False).run_tests(test_args)
     sys.exit(failures)
 
 

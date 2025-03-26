@@ -22,7 +22,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 from lxml.etree import ElementTree
-from django.http import HttpResponse, HttpRequest, Http404
+from django.http import HttpResponse, HttpRequest as OriginalHttpRequest, Http404
 from djangodav.acls import FullAcl
 from djangodav.locks import DummyLock
 from djangodav.responses import ResponseException
@@ -34,6 +34,9 @@ from djangodav.fs.tests import *
 from djangodav.utils import D, WEBDAV_NSMAP, rfc1123_date
 from djangodav.views import DavView
 from mock import Mock
+
+class HttpRequest(OriginalHttpRequest):
+    user = Mock(is_authenticated=lambda: True)
 
 
 class TestView(TestCase):
@@ -75,7 +78,7 @@ class TestView(TestCase):
         wrong_path = '/collection'
         v = DavView(path=wrong_path, acl_class=FullAcl)
         v.__dict__['resource'] = MockCollection(actual_path)
-        request = Mock(META={'SERVERNANE': 'testserver'}, build_absolute_uri=Mock(return_value=wrong_path))
+        request = Mock(META={'SERVERNAME': 'testserver'}, build_absolute_uri=Mock(return_value=wrong_path))
         resp = v.get(request, wrong_path, 'xbody')
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(actual_path, resp['Location'])
@@ -85,7 +88,7 @@ class TestView(TestCase):
         wrong_path = '/object.mp4/'
         r = DavView(path=wrong_path, acl_class=FullAcl)
         r.__dict__['resource'] = MockObject(actual_path)
-        request = Mock(META={'SERVERNANE': 'testserver'}, build_absolute_uri=Mock(return_value=wrong_path))
+        request = Mock(META={'SERVERNAME': 'testserver'}, build_absolute_uri=Mock(return_value=wrong_path))
         resp = r.get(request, wrong_path, 'xbody')
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(resp['Location'], actual_path)
@@ -94,8 +97,9 @@ class TestView(TestCase):
         path = '/object.mp4'
         r = DavView(path=path, acl_class=FullAcl)
         r.__dict__['resource'] = MissingMockCollection(path)
-        request = Mock(META={'SERVERNANE': 'testserver'}, build_absolute_uri=Mock(return_value=path))
-        self.assertRaises(Http404, r.get, request, path, 'xbody')
+        request = Mock(META={'SERVERNAME': 'testserver'}, build_absolute_uri=Mock(return_value=path))
+        resp = r.get(request, path, 'xbody')
+        self.assertEqual(resp.status_code, 404)
 
     def test_propfind_listing(self):
         self.top_collection.get_descendants.return_value += [self.top_collection]
@@ -302,8 +306,8 @@ class TestView(TestCase):
         v.__dict__['resource'] = MockObject(path)
         resp = v.options(None, path)
         self.assertEqual(sorted(resp.items()), [
+            ('Accept-Ranges', 'bytes'),
             ('Allow', 'ALL'),
-            ('Allow-Ranges', 'bytes'),
             ('Content-Length', '0'),
             ('Content-Type', 'text/xml; charset="utf-8"'),
             ('DAV', '1,2'),
@@ -313,7 +317,7 @@ class TestView(TestCase):
         path = '/collection/'
         v = DavView(path=path, _allowed_methods=Mock(return_value=['ALL']), acl_class=FullAcl)
         v.__dict__['resource'] = MockCollection(path)
-        resp = v.options(None, path)
+        resp = v.options(HttpRequest(), path)
         self.assertEqual(sorted(resp.items()), [
             ('Allow', 'ALL'),
             ('Content-Length', '0'),
@@ -325,21 +329,21 @@ class TestView(TestCase):
         path = '/obj.txt'
         v = DavView(path=path, _allowed_methods=Mock(return_value=['ALL']), acl_class=FullAcl)
         v.__dict__['resource'] = MockObject(path, read=Mock(return_value="C" * 42))
-        resp = v.get(None, path, acl_class=FullAcl)
+        resp = v.get(HttpRequest(), path, acl_class=FullAcl)
         self.assertEqual(resp['Etag'], "0" * 40)
         self.assertEqual(resp['Content-Type'], "text/plain")
         self.assertEqual(resp['Last-Modified'], "Wed, 24 Dec 2014 06:00:00 +0000")
-        self.assertEqual(resp.content, "C" * 42)
+        self.assertEqual(resp.getvalue(), b"C" * 42)
 
     @patch('django.views.generic.TemplateView.get', Mock(return_value=HttpResponse('listing')))
     def test_head_object(self):
         path = '/object.txt'
         v = DavView(path=path, base_url='/base', _allowed_methods=Mock(return_value=['ALL']), acl_class=FullAcl)
-        v.__dict__['resource'] = MockObject(path)
-        resp = v.head(None, path)
+        v.__dict__['resource'] = MockObject(path, getcontentlength=0)
+        resp = v.head(HttpRequest(), path)
         self.assertEqual("text/plain", resp['Content-Type'])
         self.assertEqual("Wed, 24 Dec 2014 06:00:00 +0000", resp['Last-Modified'])
-        self.assertEqual("", resp.content)
+        self.assertEqual(b"", resp.getvalue())
         self.assertEqual("0", resp['Content-Length'])
 
     @patch('django.views.generic.TemplateView.get', Mock(return_value=HttpResponse('listing')))
@@ -347,8 +351,8 @@ class TestView(TestCase):
         path = '/collection/'
         v = DavView(path=path, acl_class=FullAcl, base_url='/base', _allowed_methods=Mock(return_value=['ALL']))
         v.__dict__['resource'] = MockCollection(path)
-        resp = v.get(None, path)
-        self.assertEqual("listing", resp.content)
+        resp = v.get(HttpRequest(), path)
+        self.assertEqual(b"listing", resp.content)
         self.assertEqual("Wed, 24 Dec 2014 06:00:00 +0000", resp['Last-Modified'])
 
     def test_head_collection(self):
@@ -356,7 +360,7 @@ class TestView(TestCase):
         v = DavView(path=path, acl_class=FullAcl, base_url='/base', _allowed_methods=Mock(return_value=['ALL']))
         v.__dict__['resource'] = MockCollection(path)
         resp = v.head(None, path)
-        self.assertEqual("", resp.content)
+        self.assertEqual(b"", resp.getvalue())
         self.assertEqual("Wed, 24 Dec 2014 06:00:00 +0000", resp['Last-Modified'])
         self.assertEqual("0", resp['Content-Length'])
 
@@ -367,7 +371,7 @@ class TestView(TestCase):
         self.missing_sub_object.write = Mock()
         request = HttpRequest()
         resp = v.put(request, path)
-        self.missing_sub_object.write.assert_called_with(request)
+        self.missing_sub_object.write.assert_called_with(request, range_start=None)
         self.assertEqual(201, resp.status_code)
 
     def test_put_exists(self):
@@ -377,7 +381,7 @@ class TestView(TestCase):
         self.sub_object.write = Mock()
         request = HttpRequest()
         resp = v.put(request, path)
-        self.sub_object.write.assert_called_with(request)
+        self.sub_object.write.assert_called_with(request, range_start=None)
         self.assertEqual(204, resp.status_code)
 
     def test_put_collection(self):

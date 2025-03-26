@@ -41,6 +41,7 @@ class DavView(TemplateView):
     resource_class = None
     lock_class = None
     acl_class = None
+    user = None
     template_name = 'djangodav/index.html'
     http_method_names = ['options', 'put', 'mkcol', 'head', 'get', 'delete', 'propfind', 'proppatch', 'copy', 'move', 'lock', 'unlock']
     server_header = 'DjangoDav'
@@ -208,6 +209,7 @@ class DavView(TemplateView):
         if self.resource.is_object:
             # is an object
             response['Content-Type'] = self.resource.content_type
+            response._no_explicit_content_type = False
             response['ETag'] = self.resource.etag
             response['Content-Length'] = self.resource.getcontentlength
             response['Accept-Ranges'] = 'bytes'
