@@ -1,3 +1,6 @@
+# Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+# All rights reserved.
+#
 # Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
 # All rights reserved.
 #
@@ -23,17 +26,27 @@
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 from hashlib import md5
 from mimetypes import guess_type
-
 from urllib.parse import quote as urlquote
-from djangodav.utils import rfc3339_date, rfc1123_date, safe_join
+
+from djangodav.utils import rfc1123_date, rfc3339_date, safe_join
 
 
 class BaseDavResource:
-    ALL_PROPS = ['getcontentlength', 'creationdate', 'getlastmodified', 'resourcetype', 'displayname']
+    ALL_PROPS = [
+        "getcontentlength",
+        "creationdate",
+        "getlastmodified",
+        "resourcetype",
+        "displayname",
+    ]
 
     LIVE_PROPERTIES = [
-        '{DAV:}getetag', '{DAV:}getcontentlength', '{DAV:}creationdate',
-        '{DAV:}getlastmodified', '{DAV:}resourcetype', '{DAV:}displayname'
+        "{DAV:}getetag",
+        "{DAV:}getcontentlength",
+        "{DAV:}creationdate",
+        "{DAV:}getlastmodified",
+        "{DAV:}resourcetype",
+        "{DAV:}displayname",
     ]
 
     def __init__(self, path=None, user=None):
@@ -56,7 +69,7 @@ class BaseDavResource:
     @property
     def displayname(self):
         if len(self.path) == 0:
-            return '/'
+            return "/"
         if not self.path:
             return None
         return self.path[-1]
@@ -81,7 +94,7 @@ class BaseDavResource:
         # in case of infinity.
         if depth != 0:
             for child in self.get_children():
-                for desc in child.get_descendants(depth=depth-1, include_self=True):
+                for desc in child.get_descendants(depth=depth - 1, include_self=True):
                     yield desc
 
     @property
@@ -113,7 +126,7 @@ class BaseDavResource:
         # ToDo: This is a property... it should not have a "get" in the name -> rename it
         raise NotImplementedError()
 
-    def copy(self,  destination, depth=-1):
+    def copy(self, destination, depth=-1):
         if self.is_collection:
             if not destination.exists or not destination.is_collection:
                 destination.create_collection()
@@ -131,15 +144,17 @@ class BaseDavResource:
         # If depth is less than 0, then it started out as -1.
         # We need to keep recursing until we hit 0, or forever
         # in case of infinity.
-        if depth != 0:
+        if depth != 0 and self.is_collection:
             for child in self.get_children():
-                child.copy(self.clone(safe_join(destination.get_path(), child.displayname)),
-                           depth=depth-1)
+                child.copy(
+                    self.clone(safe_join(destination.get_path(), child.displayname)),
+                    depth=depth - 1,
+                )
 
     def copy_object(self, destination):
-        raise NotImplemented()
+        raise NotImplementedError()
 
-    def move(self,  destination):
+    def move(self, destination):
         if self.is_collection:
             if not destination.exists or not destination.is_collection:
                 destination.create_collection()
@@ -163,7 +178,7 @@ class BaseDavResource:
         return clone
 
     def move_object(self, destination):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def write(self, content, temp_file=None, range_start=None):
         raise NotImplementedError()

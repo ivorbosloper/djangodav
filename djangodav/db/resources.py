@@ -1,3 +1,6 @@
+# Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+# All rights reserved.
+#
 # Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
 # All rights reserved.
 #
@@ -21,15 +24,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
+import logging
+from functools import reduce
 from operator import and_
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.functional import cached_property
 from django.utils.timezone import now
+
 from djangodav.base.resources import BaseDavResource
 from djangodav.utils import url_join
-from functools import reduce
-import logging
 
 log = logging.getLogger(__name__)
 
@@ -38,15 +43,15 @@ class BaseDBDavResource(BaseDavResource):
     collection_model = None
     object_model = None
 
-    collection_attribute = 'parent'
-    created_attribute = 'created'
-    modified_attribute = 'modified'
-    name_attribute = 'name'
-    size_attribute = 'size'
+    collection_attribute = "parent"
+    created_attribute = "created"
+    modified_attribute = "modified"
+    name_attribute = "name"
+    size_attribute = "size"
 
     def __init__(self, path, **kwargs):
-        if 'obj' in kwargs:  # Accepting ready object to reduce db requests
-            self.__dict__['obj'] = kwargs.pop('obj')
+        if "obj" in kwargs:  # Accepting ready object to reduce db requests
+            self.__dict__["obj"] = kwargs.pop("obj")
         super(BaseDBDavResource, self).__init__(path)
         # Overridable in child implementations
         self.collection_model_qs = self.collection_model.objects
@@ -93,19 +98,18 @@ class BaseDBDavResource(BaseDavResource):
         if not self.exists or isinstance(self.obj, self.object_model):
             return
 
-        querysets = [
-            self.collection_model_qs,
-            self.object_model_qs
-        ]
+        querysets = [self.collection_model_qs, self.object_model_qs]
         for qs in querysets:
             # get kwargs for this model
-            kwargs = self.get_model_lookup_kwargs(**{self.collection_attribute: self.obj})
+            kwargs = self.get_model_lookup_kwargs(
+                **{self.collection_attribute: self.obj}
+            )
 
             # wtf?
             for child in qs.filter(**kwargs):
                 yield self.clone(
                     url_join(*(self.path + [child.name])),
-                    obj=child    # Sending ready object to reduce db requests
+                    obj=child,  # Sending ready object to reduce db requests
                 )
 
     def read(self):
@@ -129,10 +133,10 @@ class NameLookupDBDavMixIn:
         super(NameLookupDBDavMixIn, self).__init__(path, **kwargs)
 
     def get_object(self):
-        return self.get_model_by_path('object', self.path)
+        return self.get_model_by_path("object", self.path)
 
     def get_collection(self):
-        return self.get_model_by_path('collection', self.path)
+        return self.get_model_by_path("collection", self.path)
 
     def create_collection_in_db(self, parent, name):
         """
@@ -142,7 +146,7 @@ class NameLookupDBDavMixIn:
         :return:
         """
         self.collection_model.objects.create(
-            **{self.collection_attribute: parent, 'name': name}
+            **{self.collection_attribute: parent, "name": name}
         )
 
     def create_collection(self):
@@ -180,9 +184,19 @@ class NameLookupDBDavMixIn:
         args = []
         i = 0
         for part in reversed(path):
-            args.append(Q(**{"__".join(([self.collection_attribute] * i) + [self.name_attribute]): part}))
+            args.append(
+                Q(
+                    **{
+                        "__".join(
+                            ([self.collection_attribute] * i) + [self.name_attribute]
+                        ): part
+                    }
+                )
+            )
             i += 1
-        qs = getattr(self, "%s_model_qs" % model_attr).filter(**self.get_model_lookup_kwargs())
+        qs = getattr(self, "%s_model_qs" % model_attr).filter(
+            **self.get_model_lookup_kwargs()
+        )
 
         args.append(Q(**{"__".join([self.collection_attribute] * len(path)): None}))
         try:
@@ -226,4 +240,10 @@ class NameLookupDBDavMixIn:
         setattr(self.obj, self.name_attribute, name)
         setattr(self.obj, self.collection_attribute, collection)
         setattr(self.obj, self.modified_attribute, now())
-        self.obj.save(update_fields=[self.name_attribute, self.collection_attribute, self.modified_attribute])
+        self.obj.save(
+            update_fields=[
+                self.name_attribute,
+                self.collection_attribute,
+                self.modified_attribute,
+            ]
+        )

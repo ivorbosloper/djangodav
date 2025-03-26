@@ -1,1 +1,3 @@
-from .views import *
+from .views import DavView
+
+__all__ = ["DavView"]

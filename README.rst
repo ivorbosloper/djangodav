@@ -33,7 +33,8 @@ Development & Contributions
 
 - Create a virtual environment: ``virtualenv -p python3 env``
 - Activate virtual environment: ``source env/bin/activate``
-- Install dependencies: ``pip install requirements.txt``
+- Install dependencies: ``pip install -e ".[dev]"``
+- A pre-commmit check avoids committing unformatted code: ``pre-commit install``
 - Edit Source Code and make a Pull Request :)
 
 
@@ -41,7 +42,8 @@ Contributions within this repository
 ------------------------------------
 
 - Django 4+ compatibility
-
+- Python 3.11+ compatibility
+- Make testing work on github
 
 Original Source
 ---------------
@@ -50,7 +52,6 @@ The original source code is from the following repositories
 
 - `djangodav by arcli <https://github.com/arcli/djangodav/>`_
 - `djangodav by anx-ckreuzberger <https://github.com/anx-ckreuzberger/djangodav>`_
-- `djangodav by TZanke <https://github.com/TZanke/djangodav>`_
 - `djangodav by TZanke <https://github.com/TZanke/djangodav>`_
 - `djangodav by MnogoByte <https://github.com/MnogoByte/djangodav>`_
 - `django-webdav by sirmmo <https://github.com/sirmmo/django-webdav>`_

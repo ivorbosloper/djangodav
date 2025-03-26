@@ -1,3 +1,6 @@
+# Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+# All rights reserved.
+#
 # Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
 # All rights reserved.
 #
@@ -22,5 +25,5 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 
-VERSION = (0, 0, 1, 'beta', 27)
-__version__ = "0.0.1b27"
+VERSION = (0, 0, 2)
+__version__ = "0.0.2"
