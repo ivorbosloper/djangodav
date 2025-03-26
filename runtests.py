@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
 # All rights reserved.
 #

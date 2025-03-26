@@ -29,7 +29,6 @@ import unicodedata
 from email.utils import parsedate_tz
 from urllib.parse import quote as urlquote
 
-# ToDo: do not use lxml, use defusedxml to avoid XML vulnerabilities
 import lxml.builder as lb
 from django.utils.feedgenerator import rfc2822_date
 

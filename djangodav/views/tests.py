@@ -26,8 +26,6 @@
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 from django.http import Http404, HttpResponse
 from django.http import HttpRequest as OriginalHttpRequest
-
-# ToDo: do not use lxml, use defusedxml to avoid XML vulnerabilities
 from lxml import etree
 from lxml.etree import ElementTree
 from mock import Mock

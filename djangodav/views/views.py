@@ -4,7 +4,6 @@ import re
 from urllib import parse as urlparse
 from urllib.parse import quote as urlquote
 
-from defusedxml.lxml import parse
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import (
@@ -22,6 +21,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from lxml import etree
+from lxml.etree import parse
 
 from djangodav.responses import (
     HttpResponseBadGateway,
@@ -111,7 +111,6 @@ class DavView(TemplateView):
             and meta("CONTENT_LENGTH", 0) != ""
             and int(meta("CONTENT_LENGTH", 0)) > 0
         ):
-            # parse XML using defusedxmls parse function
             self.xbody = kwargs["xbody"] = etree.XPathDocumentEvaluator(
                 parse(request, etree.XMLParser(ns_clean=True, resolve_entities=True)),
                 namespaces=WEBDAV_NSMAP,
