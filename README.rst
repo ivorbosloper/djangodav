@@ -33,7 +33,7 @@ Development & Contributions
 
 - Create a virtual environment: ``virtualenv -p python3 env``
 - Activate virtual environment: ``source env/bin/activate``
-- Install dependencies: ``pip install requirements.txt``
+- Install dependencies: `pip install -e ".[dev]"``
 - Edit Source Code and make a Pull Request :)
 
 
