@@ -1,0 +1,45 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+    paths:
+      - "**.py"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          python-version: ["3.11", "3.12"]
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache pipinstall
+      uses: actions/cache@v4
+      id: cache-pipinstall
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pipinstall
+    - name: Install dependencies
+      if: steps.cache-pipinstall.outputs.cache-hit != 'true'
+      run: |
+        python -m pip install --upgrade pip
+        pip install ".[dev]" .
+    - name: Run tests
+      run: |
+        set -o pipefail
+        python runtests.py
+
+# TODO https://github.com/marketplace/actions/publish-test-results
