@@ -33,7 +33,8 @@ Development & Contributions
 
 - Create a virtual environment: ``virtualenv -p python3 env``
 - Activate virtual environment: ``source env/bin/activate``
-- Install dependencies: `pip install -e ".[dev]"``
+- Install dependencies: ``pip install -e ".[dev]"``
+- A pre-commmit check avoids committing unformatted code: ``pre-commit install``
 - Edit Source Code and make a Pull Request :)
 
 
