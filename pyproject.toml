@@ -1,0 +1,122 @@
+# Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+# All rights reserved.
+#
+# Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
+# All rights reserved.
+#
+# Portions (c) 2014, Alexander Klimenko <alex@erix.ru>
+# All rights reserved.
+#
+# Copyright (c) 2011, SmartFile <btimby@smartfile.com>
+# All rights reserved.
+#
+# This file is part of DjangoDav.
+#
+# DjangoDav is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# DjangoDav is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
+
+[project]
+name = "DjangoDav"
+dynamic = ["version"]
+description = "A WebDav server for Django"
+readme = "README.rst"
+license = "AGPL-3.0"
+authors = [
+    {name = "Ivor Bosloper", email="ivorbosloper@gmail.com"},
+    {name = "Seth Ladygo", email="alx-git@arclight.industries"},
+    {name = "Omar BENHAMID", email="contact@obenhamid.me"},
+    {name = "Christian Kreuzberger", email="ckreuzberger@anexia-it.com"},
+    {name = "Tobias Zanke", email="tzanke@tbz-pariv.de"},
+    {name = "meteozond", email="alex@erix.ru"},
+    {name = "Alexander Klimenko", email="alex@erix.ru"},
+    {name = "Pellaeon Lin", email="nfsmwlin@gmail.com"},
+    {name = "atin65536", email="atin65536@gmail.com"},
+    {name = "Petr Klus", email="petr@klus.co.uk"},
+    {name = "Chris Vigelius", email="me@cv.gd"},
+    {name = "Marco Montanari", email="sirmmo@gmail.com"},
+    {name = "SmartFile", email="btimby@smartfile.com"},
+]
+classifiers=[
+    'Development Status :: 4 - Beta',
+    'Environment :: Web Environment',
+    'Framework :: Django',
+    'Framework :: Django :: 5.1',
+    'Framework :: Django :: 5.2',
+    'License :: OSI Approved :: GNU Affero General Public License v3',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    'Topic :: Software Development :: Libraries :: Python Modules'
+]
+dependencies = [
+    "Django>=4,<5.3",
+    "lxml",
+]
+
+[project.urls]
+repository = "https://github.com/ivorbosloper/djangodav"
+
+[project.optional-dependencies]
+dev = ["ruff==0.1.12"]
+test = ["Django>=4", "mock>=4"]
+
+[build-system]
+requires = ["setuptools >= 61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "djangodav.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["djangodav"]
+
+# Black-like code style in ruff
+[tool.ruff]
+exclude = [
+    ".eggs",
+    ".git",
+    ".pyenv",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "build",
+    "dist",
+]
+
+line-length = 88
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E4", "E7", "E9", "F", "W", "I"]  # "C901",
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"

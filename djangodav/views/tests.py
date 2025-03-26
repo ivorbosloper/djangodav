@@ -1,3 +1,6 @@
+# Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+# All rights reserved.
+#
 # Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
 # All rights reserved.
 #

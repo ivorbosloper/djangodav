@@ -1,3 +1,6 @@
+# Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+# All rights reserved.
+#
 # Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
 # All rights reserved.
 #
@@ -131,7 +134,7 @@ class BaseDavResource:
         # If depth is less than 0, then it started out as -1.
         # We need to keep recursing until we hit 0, or forever
         # in case of infinity.
-        if depth != 0:
+        if depth != 0 and self.is_collection:
             for child in self.get_children():
                 child.copy(self.clone(safe_join(destination.get_path(), child.displayname)),
                            depth=depth-1)
