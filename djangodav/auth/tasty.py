@@ -27,7 +27,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangodav.responses import HttpResponseUnAuthorized
 
 
-class TastypieAuthViewMixIn(object):
+class TastypieAuthViewMixIn:
     authentication = NotImplemented
 
     @method_decorator(csrf_exempt)

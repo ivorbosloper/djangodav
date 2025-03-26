@@ -1,4 +1,7 @@
 {% comment %}
+ Django 5 / python 3 compatibility (c) 2025, Ivor Bosloper <ivorbosloper@gmail.com>
+ All rights reserved.
+
  Refactoring, Django 1.11 compatibility, cleanups, bugfixes (c) 2018 Christian Kreuzberger <ckreuzberger@anexia-it.com>
  All rights reserved.
 
@@ -38,7 +41,6 @@
 <tr><th colspan="4"><hr></th></tr>
 <tr>
     <td colspan="4">
-        {# link to parent directory #}
         <a href="{{ parent_directory_url }}">Parent Directory</a>
     </td>
 </tr>
@@ -52,6 +54,6 @@
 {% endfor %}
 <tr><th colspan="4"><hr></th></tr>
 </table>
-<p>Powered by DjangoDav - <a href="https://github.com/anx-ckreuzberger/djangodav/">https://github.com/anx-ckreuzberger/djangodav/</a></p>
+<p>Powered by <a href="https://github.com/ivorbosloper/djangodav/">DjangoDav</a></p>
 </body>
 </html>

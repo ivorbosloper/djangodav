@@ -23,7 +23,7 @@
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class BaseLock(object):
+class BaseLock:
     def __init__(self, resource):
         self.resource = resource
 

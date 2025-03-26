@@ -1,19 +1,11 @@
 import os
 import re
 
-# import urllib.parse
 from django.core.exceptions import PermissionDenied, ValidationError
 
-try:
-    # Python 2.7
-    import urlparse
-except ImportError:
-    # Python 3
-    from urllib import parse as urlparse
+from urllib import parse as urlparse
 
-# import lxml xml parser
 from lxml import etree
-# use defusedxmls parse function
 from defusedxml.lxml import parse
 
 from django.conf import settings
@@ -21,7 +13,7 @@ from django.http import HttpResponseForbidden, HttpResponseNotAllowed, HttpRespo
     HttpResponseRedirect, Http404, HttpResponse, FileResponse
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from django.utils.http import urlquote
+from urllib.parse import quote as urlquote
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView

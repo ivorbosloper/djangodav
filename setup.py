@@ -53,8 +53,8 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     # ToDo: remove lxml, replace with defusedxml for security reasons!!!
-    install_requires=["lxml", "Django>=1.11.0", "defusedxml"],
-    tests_require=["Django>=1.11.0", "mock==1.0.1"],
+    install_requires=["lxml", "Django>=4", "defusedxml"],
+    tests_require=["Django>=4", "mock==1.0.1"],
     include_package_data=True,
     zip_safe=False,
     test_suite='runtests.runtests'

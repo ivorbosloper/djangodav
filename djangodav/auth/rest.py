@@ -33,7 +33,7 @@ except ImportError:
     rest_framework = None
 
 
-class RequestWrapper(object):
+class RequestWrapper:
     """ simulates django-rest-api request wrapper """
     def __init__(self, request):
         self._request = request
@@ -41,7 +41,7 @@ class RequestWrapper(object):
         return getattr(self._request, attr)
     
     
-class RestAuthViewMixIn(object):
+class RestAuthViewMixIn:
     authentications = NotImplemented
 
     @method_decorator(csrf_exempt)

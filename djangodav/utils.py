@@ -23,20 +23,15 @@
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import datetime
 import time
 import calendar
 import unicodedata
 
-from wsgiref.handlers import format_date_time
 
-from django.utils.http import urlquote
+from urllib.parse import quote as urlquote
 from django.utils.feedgenerator import rfc2822_date
 
-try:
-    from email.utils import parsedate_tz
-except ImportError:
-    from email.Utils import parsedate_tz
+from email.utils import parsedate_tz
 
 # ToDo: do not use lxml, use defusedxml to avoid XML vulnerabilities
 import lxml.builder as lb

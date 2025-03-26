@@ -115,7 +115,7 @@ class BaseDBDavResource(BaseDavResource):
         self.obj.delete()
 
 
-class NameLookupDBDavMixIn(object):
+class NameLookupDBDavMixIn:
     """Object lookup by joining collections tables to fit given path"""
 
     def __init__(self, path, **kwargs):

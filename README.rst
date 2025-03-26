@@ -3,7 +3,7 @@ DjangoDav
 
 Production ready WebDav extension for Django.
 
-.. image:: https://travis-ci.org/anx-ckreuzberger/djangodav.svg
+.. image:: https://travis-ci.org/ivorbosloper/djangodav.svg
 
 Motivation
 ----------
@@ -40,12 +40,7 @@ Development & Contributions
 Contributions within this repository
 ------------------------------------
 
-- Cleanup
-- Django 1.11+ compatibility
-- Python3 compatibility
-- Replaced `vulnerable lxml.etree.parse function <https://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html>`_ with ``defusedxml.lxml.parse``
-- Documentation
-- Pep8/Pycodestyle fixes
+- Django 4+ compatibility
 
 
 Original Source
@@ -53,10 +48,12 @@ Original Source
 
 The original source code is from the following repositories
 
+- `djangodav by arcli <https://github.com/arcli/djangodav/>`_
+- `djangodav by anx-ckreuzberger <https://github.com/anx-ckreuzberger/djangodav>`_
+- `djangodav by TZanke <https://github.com/TZanke/djangodav>`_
 - `djangodav by TZanke <https://github.com/TZanke/djangodav>`_
 - `djangodav by MnogoByte <https://github.com/MnogoByte/djangodav>`_
 - `django-webdav by sirmmo <https://github.com/sirmmo/django-webdav>`_
-
 
 
 Difference with SmartFile django-webdav
@@ -219,18 +216,28 @@ This example is a bit more complex, as it requires two Django models and some ha
 
         root = "/path/to/folder"
 
-        def write(self, request, temp_file=None):
+        def write(self, request, temp_file=None, range_start=None):
             size = len(request.body)
-
-            # calculate a hashsum of the request (ToDo: probably need to replace this with SHA1 or such, and maybe add a salt)
-            hashsum = md5(request.body).hexdigest()
 
             # save the file
             new_path = os.path.join(settings.MEDIA_ROOT, self.displayname)
 
-            f = open(new_path, 'wb')
+            if range_start:
+                f = open(new_path, 'w+b')
+                f.seek(range_start+1)
+            else:
+                f = open(new_path, 'wb')
             f.write(request.body)
             f.close()
+
+            # calculate a hashsum of the request
+            if range_start:
+                buf = open(new_path, 'rb').read()
+                hashsum = md5(buf).hexdigest()
+                size = len(buf)
+                del buf
+            else:
+                hashsum = md5(request.body).hexdigest()
 
             if not self.exists:
                 obj = self.object_model(
@@ -241,9 +248,7 @@ This example is a bit more complex, as it requires two Django models and some ha
                 )
 
                 obj.path.name = new_path
-
                 obj.save()
-
                 return
 
             self.obj.size = size

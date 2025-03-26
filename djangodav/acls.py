@@ -23,7 +23,7 @@
 # along with DjangoDav.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class DavAcl(object):
+class DavAcl:
     """Represents all the permissions that a user might have on a resource. This
     makes it easy to implement virtual permissions."""
     def __init__(self, read=False, write=False, delete=False, full=None):

@@ -24,11 +24,11 @@
 from hashlib import md5
 from mimetypes import guess_type
 
-from django.utils.http import urlquote
+from urllib.parse import quote as urlquote
 from djangodav.utils import rfc3339_date, rfc1123_date, safe_join
 
 
-class BaseDavResource(object):
+class BaseDavResource:
     ALL_PROPS = ['getcontentlength', 'creationdate', 'getlastmodified', 'resourcetype', 'displayname']
 
     LIVE_PROPERTIES = [
@@ -197,7 +197,7 @@ class BaseDavResource(object):
         raise NotImplementedError()
 
 
-class MetaEtagMixIn(object):
+class MetaEtagMixIn:
     @property
     def etag(self):
         """Calculate an etag for this resource. The default implementation uses an md5 sub of the
