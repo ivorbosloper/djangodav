@@ -67,8 +67,8 @@ dependencies = [
 repository = "https://github.com/ivorbosloper/djangodav"
 
 [project.optional-dependencies]
-dev = ["ruff==0.1.12", "pre-commit==3.6.0", "pre-commit-hooks==4.5.0"]
-test = ["Django>=4", "mock>=4"]
+dev = ["ruff==0.1.12", "pre-commit==3.6.0", "pre-commit-hooks==4.5.0", "mock>=4"]
+test = ["mock>=4"]
 
 [build-system]
 requires = ["setuptools >= 61.0.0"]
