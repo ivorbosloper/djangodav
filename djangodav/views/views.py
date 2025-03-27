@@ -253,14 +253,14 @@ class DavView(TemplateView):
             # is an object
             response["Content-Type"] = self.resource.content_type
             response._no_explicit_content_type = False
-            response["ETag"] = self.resource.etag
+            response["ETag"] = self.resource.getetag
             response["Content-Length"] = self.resource.getcontentlength
             response["Accept-Ranges"] = "bytes"
             response["Cache-Control"] = "must-revalidate"
 
             etags = request.META.get("HTTP_IF_NONE_MATCH", None)
             if etags and (
-                self.resource.etag
+                self.resource.getetag
                 in (e.strip(" ").strip('"') for e in etags.split(","))
             ):
                 response.status_code = 304
@@ -304,7 +304,7 @@ class DavView(TemplateView):
                     response[
                         "X-Accel-Last-Modified"
                     ] = self.resource.get_modified().ctime()
-                    response["X-Accel-ETag"] = self.resource.etag
+                    response["X-Accel-ETag"] = self.resource.getetag
 
                     return response
                 else:

@@ -99,7 +99,8 @@ class BaseDavResource:
 
     @property
     def getcontentlength(self):
-        # ToDo: This is a property... it should not have a "get" in the name -> rename it
+        # The property name is "getcontentlength". A get- property is unpythonic, but is exactly aligned with the spec
+        # https://www.rfc-editor.org/rfc/rfc4918#section-15.4
         raise NotImplementedError()
 
     @property
@@ -109,8 +110,9 @@ class BaseDavResource:
 
     @property
     def getlastmodified(self):
-        # ToDo: This is a property... it should not have a "get" in the name -> rename it
         """Return the modified time as http_date."""
+        # The property name is "getlastmodified". A get- property is unpythonic, but is exactly aligned with the spec
+        # https://www.rfc-editor.org/rfc/rfc4918#section-15.7
         return rfc1123_date(self.get_modified())
 
     def get_created(self):
@@ -122,8 +124,9 @@ class BaseDavResource:
         raise NotImplementedError()
 
     @property
-    def etag(self):
-        # ToDo: This is a property... it should not have a "get" in the name -> rename it
+    def getetag(self):
+        # The property name is "getetag". A get- property is unpythonic, but is exactly aligned with the spec
+        # https://www.rfc-editor.org/rfc/rfc4918#section-15.6
         raise NotImplementedError()
 
     def copy(self, destination, depth=-1):
