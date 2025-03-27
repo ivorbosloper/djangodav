@@ -217,7 +217,7 @@ class BaseDavResource:
 
 class MetaEtagMixIn:
     @property
-    def etag(self):
+    def getetag(self):
         """Calculate an etag for this resource. The default implementation uses an md5 sub of the
         absolute path modified time and size. Can be overridden if resources are not stored in a
         file system. The etag is used to detect changes to a resource between HTTP calls. So this

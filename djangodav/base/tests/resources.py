@@ -40,7 +40,7 @@ class MockResource(MagicMock, BaseDavResource):
 
 
 class MockObject(MockResource):
-    etag = "0" * 40
+    getetag = "0" * 40
     is_object = True
     is_collection = False
     getcontentlength = 42

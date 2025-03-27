@@ -263,7 +263,7 @@ This example is a bit more complex, as it requires two Django models and some ha
             return self.obj.path
 
         @property
-        def etag(self):
+        def getetag(self):
             return self.obj.md5
 
         @property
