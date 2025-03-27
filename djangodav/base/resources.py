@@ -180,7 +180,7 @@ class BaseDavResource:
     def move_object(self, destination):
         raise NotImplementedError()
 
-    def write(self, content, temp_file=None, range_start=None):
+    def write(self, request, temp_file=None, range_start=None):
         raise NotImplementedError()
 
     def read(self):

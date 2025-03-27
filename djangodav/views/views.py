@@ -87,12 +87,7 @@ class DavView(TemplateView):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, path, *args, **kwargs):
         """
-        Basic dispatch handler for all requests coming to the
-        :param request:
-        :param path:
-        :param args:
-        :param kwargs:
-        :return:
+        Basic dispatch handler for all requests coming to the view.
         """
         if path:
             self.path = path
@@ -351,7 +346,7 @@ class DavView(TemplateView):
             return HttpResponseConflict("Parent resource doesn't exist")
         if self.resource.is_collection:
             return HttpResponseNotAllowed(
-                list(set(self._allowed_methods()) - set(["MKCOL", "PUT"]))
+                list(set(self._allowed_methods()) - {"MKCOL", "PUT"})
             )
         if not self.resource.exists and not self.has_access(parent, "write"):
             return self.no_access()
@@ -409,7 +404,7 @@ class DavView(TemplateView):
         """
         if self.resource.exists:
             return HttpResponseNotAllowed(
-                list(set(self._allowed_methods()) - set(["MKCOL", "PUT"]))
+                list(set(self._allowed_methods()) - {"MKCOL", "PUT"})
             )
         if not self.resource.get_parent().exists:
             return HttpResponseConflict("Parent resource doesn't exist")

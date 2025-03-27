@@ -52,7 +52,7 @@ class BaseDBDavResource(BaseDavResource):
     def __init__(self, path, **kwargs):
         if "obj" in kwargs:  # Accepting ready object to reduce db requests
             self.__dict__["obj"] = kwargs.pop("obj")
-        super(BaseDBDavResource, self).__init__(path)
+        super(BaseDBDavResource, self).__init__(path, **kwargs)
         # Overridable in child implementations
         self.collection_model_qs = self.collection_model.objects
         self.object_model_qs = self.object_model.objects
@@ -105,7 +105,6 @@ class BaseDBDavResource(BaseDavResource):
                 **{self.collection_attribute: self.obj}
             )
 
-            # wtf?
             for child in qs.filter(**kwargs):
                 yield self.clone(
                     url_join(*(self.path + [child.name])),
@@ -115,14 +114,12 @@ class BaseDBDavResource(BaseDavResource):
     def read(self):
         raise NotImplementedError
 
-    # ToDo: here it is called `content`, but in our example it is called `request` ... why?
-    def write(self, content, temp_file=None, range_start=None):
+    def write(self, request, temp_file=None, range_start=None):
         raise NotImplementedError
 
     def delete(self):
-        if not self.obj:
-            return
-        self.obj.delete()
+        if self.obj:
+            self.obj.delete()
 
 
 class NameLookupDBDavMixIn:

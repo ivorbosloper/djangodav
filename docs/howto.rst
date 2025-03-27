@@ -90,7 +90,7 @@ Create simple database webdav resource
         collection_model = CollectionModel
         object_model = ObjectModel
 
-        def write(self, content):
+        def write(self, request, temp_file=None, range_start=None):
             size = len(content)
             hashsum = md5(content).hexdigest()
             content = b64encode(content)

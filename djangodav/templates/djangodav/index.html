@@ -39,11 +39,13 @@
     <th>Size</th>
 </tr>
 <tr><th colspan="4"><hr></th></tr>
+{% if not resource.is_root %}
 <tr>
     <td colspan="4">
         <a href="{{ parent_directory_url }}">Parent Directory</a>
     </td>
 </tr>
+{% endif %}
 {% for child in resource.get_children %}
 <tr>
     <td><a href="{{ base_url }}{{ child.get_escaped_path }}">{{ child.displayname }}</a></td>
