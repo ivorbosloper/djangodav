@@ -81,8 +81,8 @@ include-package-data = true
 [tool.setuptools.dynamic]
 version = {attr = "djangodav.__version__"}
 
-[tool.setuptools.packages.find]
-include = ["djangodav"]
+[tool.setuptools.packages]
+find = {}
 
 # Black-like code style in ruff
 [tool.ruff]
