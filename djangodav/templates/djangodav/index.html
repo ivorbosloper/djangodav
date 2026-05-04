@@ -56,6 +56,6 @@
 {% endfor %}
 <tr><th colspan="4"><hr></th></tr>
 </table>
-<p>Powered by <a href="https://github.com/ivorbosloper/djangodav/">DjangoDav</a></p>
+{% if attribution_html %}{{ attribution_html|safe }}{% endif %}
 </body>
 </html>

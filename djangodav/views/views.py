@@ -77,6 +77,7 @@ class DavView(TemplateView):
         "unlock",
     ]
     server_header = "DjangoDav"
+    attribution_html = '<p>Powered by <a href="https://github.com/ivorbosloper/djangodav/">DjangoDav</a></p>'
 
     xml_pretty_print = False
     xml_encoding = "utf-8"
@@ -209,6 +210,7 @@ class DavView(TemplateView):
         context["parent_directory_url"] = self.request.build_absolute_uri(
             "/".join(self.request.path.rstrip("/").split("/")[:-1])
         )
+        context["attribution_html"] = self.attribution_html
         return context
 
     def get(self, request, path, head=False, *args, **kwargs):
